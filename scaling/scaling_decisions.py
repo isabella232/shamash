@@ -68,19 +68,25 @@ def should_scale(payload):
     if container_pending_ratio > cluster_settings.UpContainerPendingRatio:
         scaling_direction = 'up'
         containerpendingratio = container_pending_ratio
+        logging.info("container_pending_ratio %> cluster_settings.UpContainerPendingRatio")
     elif container_pending_ratio < cluster_settings.DownContainerPendingRatio:
         scaling_direction = 'down'
         containerpendingratio = container_pending_ratio
+        logging.info("container_pending_ratio < cluster_settings.DownContainerPendingRatio")
     elif yarn_memory_available_percentage == 1:
+        logging.info("yarn_memory_available_percentage == 1")
         if number_of_nodes > cluster_settings.MinInstances:
+            logging.info("number_of_nodes > cluster_settings.MinInstances")
             scaling_direction = 'down'
             scale_to = cluster_settings.MinInstances
     # We don't have enough memory lets go up
     elif yarn_memory_available_percentage < cluster_settings.UpYARNMemAvailPct:
+        logging.info("yarn_memory_available_percentage < cluster_settings.UpYARNMemAvailPct")
         scaling_direction = 'up'
     # we have too much memory  :)
     elif yarn_memory_available_percentage > \
             cluster_settings.DownYARNMemAvailePct:
+        logging.info("yarn_memory_available_percentage > cluster_settings.DownYARNMemAvailePct:")
         scaling_direction = 'down'
     body = {
         'cluster': cluster_name,

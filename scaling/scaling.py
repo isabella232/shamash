@@ -72,6 +72,7 @@ class Scale(object):
         # No allocated memory so we don't need any workers above the
         # bare minimum
         if self.scale_to != -1:
+            logging.info("self.scale_to != -1")
             if self.cluster_settings.AddRemoveDownDelta != 0:
                 self.total = max(self.current_nodes -
                                  self.cluster_settings.AddRemoveDownDelta,
@@ -84,6 +85,7 @@ class Scale(object):
 
         # pending containers are waiting....
         if self.containerpendingratio != -1:
+            logging.info("self.containerpendingratio != -1")
             if self.scaling_direction == 'up':
                 direction = 1
             else:
@@ -115,6 +117,7 @@ class Scale(object):
         # node uses. Then calculate how many nodes we need by memory
         # consumption
         if self.use_memory:
+            logging.info("no more mem")
             if self.dataproc.get_yarn_memory_available_percentage() == 0:
                 yarn_memory_mb_allocated, yarn_memory_mb_pending = \
                     self.dataproc.get_memory_data()
@@ -176,7 +179,7 @@ class Scale(object):
 
         :param: minuets how long to go back in time
         """
-
+        logging.info("calc slope")
         met = metrics.Metrics(self.cluster_name)
         series = met.read_timeseries('YARNMemoryAvailablePercentage', minuets)
         retlist = []
@@ -198,7 +201,7 @@ class Scale(object):
             else:
                 slope = -1
             logging.debug('No Data slope is %s', slope)
-
+        logging.info("Slope %s", str(slope))
         return slope
 
     def calc_scale(self):
