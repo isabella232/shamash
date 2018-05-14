@@ -71,6 +71,7 @@ class Scale(object):
         """
         # No allocated memory so we don't need any workers above the
         # bare minimum
+        self.total = self.current_nodes
         if self.scale_to != -1:
             logging.info("self.scale_to != -1")
             if self.cluster_settings.AddRemoveDownDelta != 0:
