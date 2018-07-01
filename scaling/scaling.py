@@ -95,7 +95,10 @@ class Scale(object):
                 self.dataproc.get_container_data()
             ratio = float(
                 int(yarn_containers_allocated) / int(self.current_nodes))
-            factor = float(int(yarn_containers_pending) / ratio)
+            if ratio != 0:
+                factor = float(int(yarn_containers_pending) / ratio)
+            else:
+                factor = 1
             if self.cluster_settings.AddRemoveUpDelta != 0:
                 self.total = self.current_nodes + direction * self.cluster_settings.AddRemoveUpDelta
             else:
