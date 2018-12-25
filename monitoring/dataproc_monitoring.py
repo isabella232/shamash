@@ -7,7 +7,7 @@ import backoff
 import googleapiclient.discovery
 from google.auth import app_engine
 from googleapiclient.errors import HttpError
-
+import yarn_metrics
 from model import settings
 from util import pubsub, utils
 
@@ -85,16 +85,16 @@ class DataProc(object):
 
     def get_yarn_memory_available_percentage(self):
         """The percentage of remaining memory available to YARN
-        yarn-memory-mb-available + yarn-memory-mb-allocated = Total cluster
+        yarn-memory-available + yarn-memory-allocated = Total cluster
          memory.
          yarn_memory_mb_available / Total Cluster Memory
 
         """
         try:
             yarn_memory_mb_allocated = int(
-                self.get_yarn_metric('yarn-memory-mb-allocated'))
+                self.get_yarn_metric('yarn-memory-allocated'))
             yarn_memory_mb_available = int(
-                self.get_yarn_metric('yarn-memory-mb-available'))
+                self.get_yarn_metric('yarn-memory-available'))
             total_memory = yarn_memory_mb_allocated + yarn_memory_mb_available
             if total_memory == 0:
                 return 0
@@ -134,8 +134,12 @@ class DataProc(object):
         :return: metric value
         """
         try:
-            res = self.__get_cluster_data()
-            metric = int(res['metrics']['yarnMetrics'][metric_name])
+            metric_family = metric_name.split('-')[1]
+            metric_type = metric_name.split('-')[2]
+            ym = yarn_metrics.YarnMetrics(self.cluster_name)
+            fn = 'get_{0}_metrics'.format(metric_family)
+            result = getattr(ym, fn)()
+            metric = int(result[metric_type])
         except (HttpError, KeyError) as e:
             logging.error(e)
             raise DataProcException(e)
@@ -272,10 +276,10 @@ class DataProc(object):
         try:
 
             yarn_memory_mb_allocated = int(
-                self.get_yarn_metric('yarn-memory-mb-allocated'))
+                self.get_yarn_metric('yarn-memory-allocated'))
 
             yarn_memory_mb_pending = int(
-                self.get_yarn_metric('yarn-memory-mb-pending'))
+                self.get_yarn_metric('yarn-memory-pending'))
 
             return yarn_memory_mb_allocated, yarn_memory_mb_pending
         except DataProcException as e:

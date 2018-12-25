@@ -1,10 +1,10 @@
 Flask==0.12.2
 Werkzeug<0.13.0,>=0.12.0
-google-api-python-client
-google-auth
-google-auth-httplib2
+google-api-python-client==1.7.4
+google-auth==1.6.1
+google-auth-httplib2==0.0.3
 google-cloud-logging
-google-cloud-monitoring
+google-cloud-monitoring==0.30.1
 numpy==1.6.1
 flask-admin
 wtforms_appengine
